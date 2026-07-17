@@ -1,0 +1,550 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sanketh's Productivity Timer</title>
+<style>
+  body {
+    background: #f9f9f9;
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.5;
+  }
+
+  .header {
+    text-align: center;
+    padding: 24px;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border-radius: 12px;
+    color: #fff;
+    margin-bottom: 24px;
+  }
+
+  .header h1 {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .header p {
+    margin: 0;
+    color: #aab;
+    font-size: 14px;
+  }
+
+  .clock {
+    font-size: 48px;
+    font-family: monospace;
+    font-weight: 700;
+    color: #fff;
+    margin: 12px 0;
+  }
+
+  .current-block {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .current-block .label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #666;
+    margin-bottom: 8px;
+  }
+
+  .current-block .activity {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111;
+  }
+
+  .current-block .countdown {
+    font-size: 14px;
+    color: #555;
+    margin-top: 8px;
+    font-family: monospace;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .card .card-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #666;
+    margin-bottom: 8px;
+  }
+
+  .card .card-value {
+    font-size: 24px;
+    font-weight: 600;
+    font-family: monospace;
+    color: #111;
+  }
+
+  .card .card-sub {
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+  }
+
+  .priorities {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .priorities h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #666;
+    margin: 0 0 12px;
+  }
+
+  .priority-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .priority-item.p1 { background: #fef2f2; color: #dc2626; }
+  .priority-item.p2 { background: #fff7ed; color: #ea580c; }
+  .priority-item.p3 { background: #fefce8; color: #ca8a04; }
+  .priority-item.p4 { background: #f0fdf4; color: #15803d; }
+
+  .priority-item .rank {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 12px;
+    color: #fff;
+  }
+
+  .priority-item.p1 .rank { background: #dc2626; }
+  .priority-item.p2 .rank { background: #ea580c; }
+  .priority-item.p3 .rank { background: #ca8a04; }
+  .priority-item.p4 .rank { background: #15803d; }
+
+  .schedule {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .schedule h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #666;
+    margin: 0 0 12px;
+  }
+
+  .schedule-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+  }
+
+  .schedule-item:last-child { border-bottom: none; }
+
+  .schedule-item .time {
+    font-family: monospace;
+    color: #555;
+    min-width: 120px;
+  }
+
+  .schedule-item .desc { color: #111; font-weight: 500; }
+
+  .schedule-item.active {
+    background: #eff6ff;
+    border-radius: 6px;
+    padding: 8px;
+    border-bottom: none;
+  }
+
+  .water-tracker {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .water-tracker h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #666;
+    margin: 0 0 12px;
+  }
+
+  .water-glasses {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 12px 0;
+  }
+
+  .glass {
+    width: 28px;
+    height: 36px;
+    border: 2px solid #ddd;
+    border-radius: 0 0 6px 6px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .glass:hover {
+    border-color: #3b82f6;
+  }
+
+  .glass.filled {
+    border-color: #3b82f6;
+    background: #dbeafe;
+  }
+
+  .notification-log {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .notification-log h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #666;
+    margin: 0 0 12px;
+  }
+
+  .log-item {
+    font-size: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f5f5f5;
+    color: #444;
+    font-family: monospace;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .status-badge.working { background: #dcfce7; color: #15803d; }
+  .status-badge.break { background: #fef3c7; color: #d97706; }
+  .status-badge.offline { background: #f3f4f6; color: #6b7280; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Sanketh's Productivity Timer</h1>
+  <p>Shift: 10:30 AM – 6:00 PM | Goal: 6 hrs productive work</p>
+  <div class="clock" id="clock">--:--:--</div>
+  <span class="status-badge working" id="status-badge">Working</span>
+</div>
+
+<div class="current-block">
+  <div class="label">Currently</div>
+  <div class="activity" id="current-activity">Loading...</div>
+  <div class="countdown" id="countdown"></div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <div class="card-title">Next Break</div>
+    <div class="card-value" id="next-break">--:--</div>
+    <div class="card-sub" id="next-break-name">---</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Next Water Reminder</div>
+    <div class="card-value" id="next-water">--:--</div>
+    <div class="card-sub">Every 30 minutes</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Productive Hours</div>
+    <div class="card-value" id="productive-hours">0.0h</div>
+    <div class="card-sub">of 6h goal</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Water Intake</div>
+    <div class="card-value" id="water-count">0/8</div>
+    <div class="card-sub">glasses today</div>
+  </div>
+</div>
+
+<div class="priorities">
+  <h2>Priority Order</h2>
+  <div class="priority-item p1"><div class="rank">1</div>CTA — Resolve issues you're STUCK on</div>
+  <div class="priority-item p2"><div class="rank">2</div>Top Closures & Hot Leads Follow-up</div>
+  <div class="priority-item p3"><div class="rank">3</div>Normal Follow-ups</div>
+  <div class="priority-item p4"><div class="rank">4</div>Daily Calling Activity</div>
+</div>
+
+<div class="schedule">
+  <h2>Today's Schedule</h2>
+  <div class="schedule-item" id="s1"><span class="time">10:30 – 12:00</span><span class="desc">🔴 Focus: CTA Issues & Hot Leads</span></div>
+  <div class="schedule-item" id="s2"><span class="time">12:00 – 12:15</span><span class="desc">☕ Coffee Break</span></div>
+  <div class="schedule-item" id="s3"><span class="time">12:15 – 1:30</span><span class="desc">🟠 Focus: Follow-ups</span></div>
+  <div class="schedule-item" id="s4"><span class="time">1:30 – 2:30</span><span class="desc">🍽️ Lunch Break</span></div>
+  <div class="schedule-item" id="s5"><span class="time">2:30 – 4:15</span><span class="desc">🟢 Focus: Daily Calls & Activity</span></div>
+  <div class="schedule-item" id="s6"><span class="time">4:15 – 4:30</span><span class="desc">☕ Evening Coffee Break</span></div>
+  <div class="schedule-item" id="s7"><span class="time">4:30 – 6:00</span><span class="desc">🟡 Wrap-up: Closures & Pending</span></div>
+</div>
+
+<div class="water-tracker">
+  <h2>Water Tracker (click to log)</h2>
+  <div class="water-glasses" id="water-glasses">
+    <div class="glass" data-glass="1"></div>
+    <div class="glass" data-glass="2"></div>
+    <div class="glass" data-glass="3"></div>
+    <div class="glass" data-glass="4"></div>
+    <div class="glass" data-glass="5"></div>
+    <div class="glass" data-glass="6"></div>
+    <div class="glass" data-glass="7"></div>
+    <div class="glass" data-glass="8"></div>
+  </div>
+</div>
+
+<div class="notification-log">
+  <h2>Notification Log</h2>
+  <div id="log-entries"><div class="log-item">Timer started — notifications active</div></div>
+</div>
+
+<script>
+  var schedule = [
+    [630, 720, "🔴 Focus: CTA Issues & Hot Leads", "work"],
+    [720, 735, "☕ Coffee Break (15 min)", "break"],
+    [735, 810, "🟠 Focus: Follow-ups & Hot Leads", "work"],
+    [810, 870, "🍽️ Lunch Break", "break"],
+    [870, 975, "🟢 Focus: Daily Calls & Activity", "work"],
+    [975, 990, "☕ Evening Coffee Break", "break"],
+    [990, 1080, "🟡 Wrap-up: Closures & Pending Tasks", "work"]
+  ];
+
+  var notifications = [
+    {min: 630, msg: "🔴 LOGIN! Start with CTA issues you're stuck on!", title: "Time to Start!"},
+    {min: 660, msg: "💧 Drink water! Stay hydrated!", title: "Water Reminder"},
+    {min: 690, msg: "💧 Drink water! Keep going!", title: "Water Reminder"},
+    {min: 720, msg: "☕ Coffee Break! Take 15 minutes to recharge.", title: "Coffee Break!"},
+    {min: 735, msg: "🟠 Back to work! Focus on Hot Leads & Follow-ups.", title: "Break Over!"},
+    {min: 765, msg: "💧 Drink water! You're doing great!", title: "Water Reminder"},
+    {min: 795, msg: "💧 Drink water! Stay focused!", title: "Water Reminder"},
+    {min: 810, msg: "🍽️ Lunch Break! Enjoy your meal. Back at 2:30.", title: "Lunch Time!"},
+    {min: 870, msg: "🟢 Back from lunch! Time for Daily Calls & Activity.", title: "Back to Work!"},
+    {min: 900, msg: "💧 Drink water! Keep the energy up!", title: "Water Reminder"},
+    {min: 930, msg: "💧 Drink water! You're past halfway!", title: "Water Reminder"},
+    {min: 960, msg: "💧 Drink water! Almost break time!", title: "Water Reminder"},
+    {min: 975, msg: "☕ Evening Coffee Break! Quick 15-min recharge.", title: "Coffee Break!"},
+    {min: 990, msg: "🟡 Final stretch! Focus on Closures & Pending tasks.", title: "Last Block!"},
+    {min: 1020, msg: "💧 Drink water! Final glass for today!", title: "Water Reminder"},
+    {min: 1050, msg: "⏰ 30 minutes left! Wrap up your tasks.", title: "Almost Done!"},
+    {min: 1080, msg: "🏠 Shift over! Great work today, Sanketh! Log out.", title: "Day Complete!"}
+  ];
+
+  var firedNotifications = {};
+  var waterCount = 0;
+  var productiveMinutes = 0;
+  var lastMinute = -1;
+
+  if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+
+  function sendNotification(title, body) {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification(title, { body: body });
+    }
+    var logDiv = document.getElementById("log-entries");
+    var now = new Date();
+    var h = now.getHours();
+    var m = now.getMinutes();
+    var ampm = h >= 12 ? "PM" : "AM";
+    var hh = h > 12 ? h - 12 : h;
+    if (hh === 0) hh = 12;
+    var timeStr = (hh < 10 ? "0" : "") + hh + ":" + (m < 10 ? "0" : "") + m + " " + ampm;
+    logDiv.innerHTML = '<div class="log-item">[' + timeStr + '] ' + body + '</div>' + logDiv.innerHTML;
+  }
+
+  function getCurrentMin() {
+    var now = new Date();
+    return now.getHours() * 60 + now.getMinutes();
+  }
+
+  function formatTime(date) {
+    var h = date.getHours();
+    var m = date.getMinutes();
+    var s = date.getSeconds();
+    var ampm = h >= 12 ? "PM" : "AM";
+    var hh = h > 12 ? h - 12 : h;
+    if (hh === 0) hh = 12;
+    return (hh < 10 ? "0" : "") + hh + ":" + (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s + " " + ampm;
+  }
+
+  function update() {
+    var now = new Date();
+    var currentMin = getCurrentMin();
+
+    document.getElementById("clock").textContent = formatTime(now);
+
+    var currentBlock = null;
+    var blockIndex = -1;
+    for (var i = 0; i < schedule.length; i++) {
+      if (currentMin >= schedule[i][0] && currentMin < schedule[i][1]) {
+        currentBlock = schedule[i];
+        blockIndex = i;
+        break;
+      }
+    }
+
+    var actEl = document.getElementById("current-activity");
+    var countEl = document.getElementById("countdown");
+    var badge = document.getElementById("status-badge");
+
+    if (currentMin < 630) {
+      actEl.textContent = "⏳ Shift starts at 10:30 AM";
+      countEl.textContent = (630 - currentMin) + " min until login";
+      badge.textContent = "Offline";
+      badge.className = "status-badge offline";
+    } else if (currentMin >= 1080) {
+      actEl.textContent = "🏠 Shift over! Great work today!";
+      countEl.textContent = "";
+      badge.textContent = "Offline";
+      badge.className = "status-badge offline";
+    } else if (currentBlock) {
+      actEl.textContent = currentBlock[2];
+      var minsLeft = currentBlock[1] - currentMin;
+      countEl.textContent = minsLeft + " min remaining in this block";
+      if (currentBlock[3] === "break") {
+        badge.textContent = "On Break";
+        badge.className = "status-badge break";
+      } else {
+        badge.textContent = "Working";
+        badge.className = "status-badge working";
+      }
+    }
+
+    for (var i = 1; i <= 7; i++) {
+      var el = document.getElementById("s" + i);
+      if (el) el.className = (i - 1 === blockIndex) ? "schedule-item active" : "schedule-item";
+    }
+
+    var nextBreakEl = document.getElementById("next-break");
+    var nextBreakName = document.getElementById("next-break-name");
+    var foundBreak = false;
+    for (var i = 0; i < schedule.length; i++) {
+      if (schedule[i][3] === "break" && schedule[i][0] > currentMin) {
+        var diff = schedule[i][0] - currentMin;
+        nextBreakEl.textContent = diff + " min";
+        nextBreakName.textContent = schedule[i][2];
+        foundBreak = true;
+        break;
+      }
+    }
+    if (!foundBreak) {
+      nextBreakEl.textContent = "Done!";
+      nextBreakName.textContent = "No more breaks today";
+    }
+
+    var nextWaterEl = document.getElementById("next-water");
+    var foundWater = false;
+    for (var i = 0; i < notifications.length; i++) {
+      if (notifications[i].msg.indexOf("water") !== -1 && notifications[i].min > currentMin) {
+        nextWaterEl.textContent = (notifications[i].min - currentMin) + " min";
+        foundWater = true;
+        break;
+      }
+    }
+    if (!foundWater) {
+      nextWaterEl.textContent = "Done!";
+    }
+
+    // Track productive time
+    if (currentBlock && currentBlock[3] === "work" && currentMin !== lastMinute) {
+      productiveMinutes++;
+      lastMinute = currentMin;
+    }
+    document.getElementById("productive-hours").textContent = (productiveMinutes / 60).toFixed(1) + "h";
+
+    // Fire notifications
+    for (var i = 0; i < notifications.length; i++) {
+      var n = notifications[i];
+      if (currentMin === n.min && !firedNotifications[n.min]) {
+        firedNotifications[n.min] = true;
+        sendNotification(n.title, n.msg);
+        // Flash tab title
+        var flashCount = 0;
+        var originalTitle = document.title;
+        var flashInterval = setInterval(function(t) {
+          document.title = flashCount % 2 === 0 ? "⚠️ " + t : originalTitle;
+          flashCount++;
+          if (flashCount > 10) {
+            clearInterval(flashInterval);
+            document.title = originalTitle;
+          }
+        }.bind(null, n.title), 800);
+      }
+    }
+
+    document.getElementById("water-count").textContent = waterCount + "/8";
+  }
+
+  document.getElementById("water-glasses").addEventListener("click", function(e) {
+    if (e.target.classList.contains("glass") && !e.target.classList.contains("filled")) {
+      waterCount++;
+      e.target.classList.add("filled");
+      document.getElementById("water-count").textContent = waterCount + "/8";
+      sendNotification("💧 Water Logged!", "Glass " + waterCount + " of 8 — keep it up!");
+    }
+  });
+
+  setInterval(update, 1000);
+  update();
+</script>
+
+</body>
+</html>
